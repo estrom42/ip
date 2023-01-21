@@ -10,6 +10,7 @@ DB_INFO = {
     'db' : 'ipcountry',
     'password' : 'webuser'
 }
+
 def main():
 
     parms = sys.argv
@@ -63,6 +64,7 @@ def get_country_code(longIp):
     )
     # Make a cursor, in db lingo.
     cur = conn.cursor()
+    
 
 
 
