@@ -24,8 +24,9 @@ def main():
     elif(sys.argv[1] == "-v"):
         print_version()
         exit(0)
-    # We'll assume, then, that the arg is an ip address and attempt to convert it into
-    # a long integer that we can use to get the country code from the database.
+    # We'll assume, then, that the arg is an ip address and attempt to convert
+    # it into a long integer that we can use to get the country code from the
+    # database.
     longIp = get_long_ip(sys.argv[1])
     print(longIp)
     # Last thing is to get the country code from the database and output it.
@@ -64,15 +65,17 @@ def get_country_code(longIp):
     )
     # Make a cursor, in db lingo.
     cur = conn.cursor()
-    
+    # Construct our query. We're looking for the country code of the
+    # integer ip address that's passed in longIp.
+    query = 'SELECT countrySHORT FROM ipCountry WHERE %d >= ipFROM AND ipTO >= %d' \
+        % (longIp, longIp)
+    # Ship the query.
+    cur.execute(query)
+    # Get result.
+    result = cur.fetchall()
+    print()
 
-
-
-
-
-
-
-######## main() called from here.
+######## main() called from here. ##################################
 
 if __name__ == '__main__':
     main()
