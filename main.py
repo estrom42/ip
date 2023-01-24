@@ -37,7 +37,7 @@ def usage():
     print("usage: ip ip_address")
 
 def print_version():
-    print("%s version %s", PROGNAME, VERSION)
+    print(f"{PROGNAME} version {VERSION}")
 
 def get_long_ip(ip_addr):
     # Initialize integer IP address.
@@ -73,7 +73,9 @@ def get_country_code(longIp):
     cur.execute(query)
     # Get result.
     result = cur.fetchall()
-    print()
+
+    return(result)
+
 
 ######## main() called from here. ##################################
 
