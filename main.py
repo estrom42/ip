@@ -2,7 +2,7 @@ import sys
 import pymysql
 
 PROGNAME = "ip"
-VERSION = "1.00.01 (230126)"
+VERSION = "1.00.01 (230129)"
 
 # Connection (login) info for the database we want to consult. In any
 # more advanced versions, this will be in a separate config file
@@ -30,7 +30,8 @@ def main():
     # At this point, Lord help us if the arg isn't a well-formed IP
     # address because we will crash and burn in long skeins of
     # unhandled exceptions otherwise. Beware.
-    # get_long_ip() returns -1 if anything goes wrong there.
+    # get_long_ip() does some obvious checks, and it returns -1 if
+    # anything goes wrong there.
     longIp = get_long_ip(sys.argv[1])
     if (longIp < 0):
         usage()
@@ -40,33 +41,41 @@ def main():
     # Last thing is to get the country code from the database and output it.
     print(get_country_code(longIp))
 
+                    # End main()
 def get_long_ip(ip_addr):
     # Initialize integer IP address.
     ipnum = 0
-    # split() the incoming ip address into four strings.
+    # split() on the dot the incoming IP address. The result should be
+    # four strings.
     ipAddrs = ip_addr.split('.')
+    # Save the array length, because we'll reference it later.
+    num_octets = len(ipAddrs)
     # Make sure we have four, bail if not.
-    if (len(ipAddrs) != 4):
+    if num_octets != 4:
         return(-1)
     # Now accumulate an integer value of the ip address by incrementing
-    # through each octet as a decrementing power of 256.
-    ipnum += int(ipAddrs[0]) * (256 ** 3)
-    ipnum += int(ipAddrs[1]) * (256 ** 2)
-    ipnum += int(ipAddrs[2]) * (256 ** 1)
-    ipnum += int(ipAddrs[3]) * (256 ** 0)
-
+    # through each octet as a decrementing power of 256. We'll also do
+    # a rudimentary check of each octet to at least ensure none of them
+    # exceeds 255, which would be an invalid value for any of them.
+    i = top = num_octets - 1       # Starting index is len - 1.
+    while (i >= 0):
+        octet = int(ipAddrs[top - i])
+        if octet > 255:             # Out of range?
+            return -1               # Return an error.
+        ipnum += octet * (256 ** i) # Otherwise, g'head with calculation and ...
+        i -= 1                      # ... decrement counter.
+    # End while(i>= 0)
     return ipnum
-
-
+                    # End get_long_ip()
 def get_country_code(longIp):
     # Put the database access info in a local variable and use that to
     # initiate a connection.
     dbi = IP_COUNTRY_DB_INFO
     conn = pymysql.connect(
-        host=dbi['host'],
-        user=dbi['user'],
-        password=dbi['password'],
-        db=dbi['db']
+        host = dbi['host'],
+        user = dbi['user'],
+        password = dbi['password'],
+        db = dbi['db']
     )
     # Make a cursor, in db lingo.
     cur = conn.cursor()
@@ -82,7 +91,7 @@ def get_country_code(longIp):
     # Ship the result back. Remember it's a single-value tuple, so we have
     # to extract the actual result.
     return result[0]
-
+                    # End get_country_code()
 def usage():
     # Print usage() message and return.
     print(f'usage: {PROGNAME} ip_address')
