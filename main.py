@@ -17,7 +17,7 @@ def main():
 
     # Check args. There should be just one, the ip address or "-v" for version.
     # Not just one arg? Put up usage message and bail.
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 2:      # Program file path is always the first arg.
         usage()
         exit(-1)
     # Version request?
@@ -45,8 +45,8 @@ def main():
 def get_long_ip(ip_addr):
     # Initialize integer IP address.
     ipnum = 0
-    # split() on the dot the incoming IP address. The result should be
-    # four strings.
+    # split() the incoming IP address on the dot. The result should be
+    # four strings that we can then turn into ints.
     ipAddrs = ip_addr.split('.')
     # Save the array length, because we'll reference it later.
     num_octets = len(ipAddrs)
@@ -64,7 +64,7 @@ def get_long_ip(ip_addr):
             return -1               # Return an error.
         ipnum += octet * (256 ** i) # Otherwise, g'head with calculation and ...
         i -= 1                      # ... decrement counter.
-    # End while(i>= 0)
+                    # End while(i>= 0)
     return ipnum
                     # End get_long_ip()
 def get_country_code(longIp):
