@@ -20,6 +20,9 @@ def main():
     if len(sys.argv) != 2:      # Program file path is always the first arg.
         usage()
         exit(-1)
+    elif len(sys.argv[1]) > 11: # Can't be longer than "xxx.xxx.xxx"
+        usage()
+        exit(-1)
     # Version request?
     elif (sys.argv[1] == "-v"):
         print_version()
@@ -56,14 +59,15 @@ def get_long_ip(ip_addr):
     # Now accumulate an integer value of the ip address by incrementing
     # through each octet as a decrementing power of 256. We'll also do
     # a rudimentary check of each octet to at least ensure none of them
-    # exceeds 255, which would be an invalid value for any of them.
-    i = top = num_octets - 1       # Starting index is len - 1.
-    while (i >= 0):
-        octet = int(ipAddrs[top - i])
-        if octet > 255:             # Out of range?
-            return -1               # Return an error.
-        ipnum += octet * (256 ** i) # Otherwise, g'head with calculation and ...
-        i -= 1                      # ... decrement counter.
+    # exceeds 255 or is less than 1, which would be an invalid value
+    # for any of them.
+    i = top = num_octets - 1            # Starting index is len - 1.
+    while (i >= 0):                     # Get next octet.
+        octet = int(ipAddrs[top - i])   # Convert string octet to integer.
+        if (octet > 255) or (octet < 1):# Out of range?
+            return -1                   # Return an error.
+        ipnum += octet * (256 ** i)     # Otherwise, g'head with calculation.
+        i -= 1                          # Decrement counter.
                     # End while(i>= 0)
     return ipnum
                     # End get_long_ip()
