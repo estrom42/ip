@@ -2,8 +2,11 @@ import sys
 import pymysql
 
 PROGNAME = "ip"
-VERSION = "1.00.01 (230129)"
-
+VERSION = "1.00.02 (230220)"
+# Set a flag for debug mode.
+DEBUG = False
+if sys.gettrace() != None:
+    DEBUG = True
 # Connection (login) info for the database we want to consult. In any
 # more advanced versions, this will be in a separate config file
 IP_COUNTRY_DB_INFO = {
@@ -13,14 +16,15 @@ IP_COUNTRY_DB_INFO = {
     'password': 'webuser'
 }
 def main():
-    parms = sys.argv
-
+    if DEBUG:
+        parms = sys.argv
+        length = len(sys.argv[1])
     # Check args. There should be just one, the ip address or "-v" for version.
     # Not just one arg? Put up usage message and bail.
     if len(sys.argv) != 2:      # Program file path is always the first arg.
         usage()
         exit(-1)
-    elif len(sys.argv[1]) > 11: # Can't be longer than "xxx.xxx.xxx"
+    elif len(sys.argv[1]) > 15: # Can't be longer than "xxx.xxx.xxx.xxx"
         usage()
         exit(-1)
     # Version request?
@@ -49,7 +53,7 @@ def get_long_ip(ip_addr):
     # Initialize integer IP address.
     ipnum = 0
     # split() the incoming IP address on the dot. The result should be
-    # four strings that we can then turn into ints.
+    # four numeric strings that we can then turn into ints.
     ipAddrs = ip_addr.split('.')
     # Save the array length, because we'll reference it later.
     num_octets = len(ipAddrs)
@@ -98,7 +102,7 @@ def get_country_code(longIp):
                     # End get_country_code()
 def usage():
     # Print usage() message and return.
-    print(f'usage: {PROGNAME} ip_address')
+    print(f'usage: {PROGNAME} nnn.nnn.nnn.nnn')
 
 def print_version():
     print(f'{PROGNAME} version {VERSION}')
